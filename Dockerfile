@@ -16,10 +16,8 @@ RUN sed -i "s/#\$ModLoad imudp/\$ModLoad imudp/" /etc/rsyslog.conf && \
 
 RUN sed -i "s/authpriv.none/authpriv.none,local6.none,local7.none/" /etc/rsyslog.d/50-default.conf
 
-RUN echo "if \$syslogfacility-text == 'local6' and \$programname == 'httpd' then /var/log/httpd-access.log" >> /etc/rsyslog.d/httpd.conf && \
-	echo "if \$syslogfacility-text == 'local6' and \$programname == 'httpd' then ~" >> /etc/rsyslog.d/httpd.conf && \
-	echo "if \$syslogfacility-text == 'local7' and \$programname == 'httpd' then /var/log/httpd-error.log" >> /etc/rsyslog.d/httpd.conf && \
-	echo "if \$syslogfacility-text == 'local7' and \$programname == 'httpd' then ~" >> /etc/rsyslog.d/httpd.conf
+RUN echo "if \$programname == 'clserver' then /var/log/clserver.log" >> /etc/rsyslog.d/clserver.conf && \
+	echo "if \$programname == 'clserver' then ~" >> /etc/rsyslog.d/clserver.conf
 
 COPY awslogs.conf awslogs.conf
 RUN python ./awslogs-agent-setup.py -n -r us-east-1 -c /awslogs.conf
