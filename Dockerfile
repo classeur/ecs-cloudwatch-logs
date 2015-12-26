@@ -1,5 +1,5 @@
 FROM ubuntu:trusty
-MAINTAINER Chad Schmutzer <schmutze@amazon.com>
+MAINTAINER Benoit Schweblin <benoit@classeur.io>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -14,10 +14,10 @@ RUN sed -i "s/#\$ModLoad imudp/\$ModLoad imudp/" /etc/rsyslog.conf && \
   sed -i "s/#\$ModLoad imtcp/\$ModLoad imtcp/" /etc/rsyslog.conf && \
   sed -i "s/#\$InputTCPServerRun 514/\$InputTCPServerRun 514/" /etc/rsyslog.conf
 
-RUN sed -i "s/authpriv.none/authpriv.none,local6.none,local7.none/" /etc/rsyslog.d/50-default.conf
+RUN sed -i "s/authpriv.none/authpriv.none,local6.none/" /etc/rsyslog.d/50-default.conf
 
-RUN echo "if \$programname == 'clserver' then /var/log/clserver.log" >> /etc/rsyslog.d/clserver.conf && \
-	echo "if \$programname == 'clserver' then ~" >> /etc/rsyslog.d/clserver.conf
+RUN echo "if \$syslogfacility-text == 'local6' and \$programname == 'clserver' then /var/log/clserver.log" >> /etc/rsyslog.d/clserver.conf && \
+	echo "if \$syslogfacility-text == 'local6' and \$programname == 'clserver' then ~" >> /etc/rsyslog.d/clserver.conf
 
 COPY awslogs.conf awslogs.conf
 RUN python ./awslogs-agent-setup.py -n -r us-east-1 -c /awslogs.conf
